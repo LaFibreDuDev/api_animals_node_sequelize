@@ -7,6 +7,7 @@
     "test": "jest",
     "test:unit": "jest tests/unit",
     "test:integration": "jest tests/integration",
+    "test:e2e": "jest --config jest.config.e2e.ts",
     "test:coverage": "jest --coverage",
     "dev": "DEBUG=app:* nodemon --exec ts-node app/index.ts",
     "test_db": "ts-node app/utils/test_db.ts",

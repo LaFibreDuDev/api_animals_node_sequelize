@@ -1,0 +1,70 @@
+import request from "supertest";
+import app from "../../app/app";
+import { Animal, sequelize } from "../../app/models";
+
+const SEED_DATA = [
+    { name: "Rex", species: "dog", age: 3 },
+    { name: "Mia", species: "cat", age: 5 },
+    { name: "Nemo", species: "fish", age: 1 },
+    { name: "Bella", species: "rabbit", age: 4 },
+    { name: "Max", species: "dog", age: 7 },
+];
+
+async function seedAnimals(count = SEED_DATA.length) {
+    await Animal.bulkCreate(SEED_DATA.slice(0, count));
+}
+
+afterAll(async () => {
+    await sequelize.close();
+});
+
+beforeEach(async () => {
+    await Animal.destroy({ truncate: true });
+});
+
+describe("GET /animals", () => {
+    it("returns 200 with an empty array when no animals exist", async () => {
+        const res = await request(app).get("/animals");
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual([]);
+    });
+
+    it("returns 200 with the correct count after seeding", async () => {
+        await seedAnimals(5);
+
+        const res = await request(app).get("/animals");
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveLength(5);
+    });
+
+    it("returns animals with the expected shape", async () => {
+        await seedAnimals(1);
+
+        const res = await request(app).get("/animals");
+
+        expect(res.status).toBe(200);
+        expect(res.body[0]).toMatchObject({
+            id: expect.any(Number),
+            name: expect.any(String),
+            species: expect.any(String),
+            age: expect.any(Number),
+        });
+    });
+
+    it("returns 200 with the exact animals inserted", async () => {
+        await seedAnimals(2);
+
+        const res = await request(app).get("/animals");
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveLength(2);
+        expect(res.body).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ name: "Rex", species: "dog", age: 3 }),
+                expect.objectContaining({ name: "Mia", species: "cat", age: 5 }),
+            ])
+        );
+    });
+});
