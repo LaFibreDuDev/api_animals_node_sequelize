@@ -1,6 +1,7 @@
 import debug from "debug";
 import express from "express";
 import mainRouter from "./routers/main_router";
+import animalRouter from "./routers/animal_router";
 import { sequelize } from "./models";
 
 const log = debug("app:main");
@@ -8,7 +9,9 @@ const log = debug("app:main");
 const app = express();
 app.use(express.json());
 
-app.use(mainRouter);
+app.use("/animals", animalRouter);
+app.use("/", mainRouter);
+
 
 async function start() {
   await sequelize.authenticate();
