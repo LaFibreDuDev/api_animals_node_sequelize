@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
+    "test:coverage": "jest --coverage",
     "dev": "DEBUG=app:* nodemon --exec ts-node app/index.ts",
     "test_db": "ts-node app/utils/test_db.ts",
     "seed": "ts-node app/seeders/index.ts"
@@ -26,10 +29,15 @@
     "@faker-js/faker": "^10.4.0",
     "@types/debug": "^4.1.13",
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/node": "^25.6.0",
+    "@types/supertest": "^7.2.0",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
+    "jest": "^30.3.0",
     "nodemon": "^3.1.14",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2"
   }
