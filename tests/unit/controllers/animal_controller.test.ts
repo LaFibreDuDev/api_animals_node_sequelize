@@ -42,6 +42,15 @@ describe("AnimalController", () => {
             expect(result).toEqual(created);
         });
 
+        it("passes categoryId when provided", async () => {
+            const body = { name: "Rex", species: "dog", age: 3, categoryId: 2 };
+            (Animal.create as jest.Mock).mockResolvedValue({ id: 1, ...body });
+
+            await new AnimalController().create(body);
+
+            expect(Animal.create).toHaveBeenCalledWith(body);
+        });
+
         it("throws when create throws", async () => {
             (Animal.create as jest.Mock).mockRejectedValue(new Error("DB error"));
 

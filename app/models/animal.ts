@@ -16,7 +16,12 @@ Animal.init({
         type: DataTypes.INTEGER,
         allowNull: false,
     },
+    categoryId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: { model: "Categories", key: "id" },
+    },
 }, {
     sequelize,
     modelName: "Animal",
-}); 
+});

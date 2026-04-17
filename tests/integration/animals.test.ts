@@ -60,6 +60,16 @@ describe("POST /animals", () => {
         expect(res.body).toEqual(created);
     });
 
+    it("returns 201 with categoryId when provided", async () => {
+        const body = { name: "Rex", species: "dog", age: 3, categoryId: 2 };
+        (Animal.create as jest.Mock).mockResolvedValue({ id: 1, ...body });
+
+        const res = await request(app).post("/animals").send(body);
+
+        expect(res.status).toBe(201);
+        expect(res.body).toMatchObject({ categoryId: 2 });
+    });
+
     it("returns 422 when a required field is missing", async () => {
         const res = await request(app).post("/animals").send({ name: "Rex" });
 

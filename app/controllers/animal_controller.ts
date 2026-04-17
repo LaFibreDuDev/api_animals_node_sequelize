@@ -7,18 +7,21 @@ export interface AnimalResponse {
     name: string;
     species: string;
     age: number;
+    categoryId: number | null;
 }
 
 export interface AnimalCreationParams {
     name: string;
     species: string;
     age: number;
+    categoryId?: number;
 }
 
 export interface AnimalUpdateParams {
     name: string;
     species: string;
     age: number;
+    categoryId?: number;
 }
 
 interface ErrorResponse {
@@ -45,19 +48,6 @@ export class AnimalController extends Controller {
         return animal as unknown as AnimalResponse;
     }
 
-    @Delete("{id}")
-    @SuccessResponse(204, "Deleted")
-    @Response<ErrorResponse>(404, "Animal not found")
-    @Response<ErrorResponse>(500, "Internal server error")
-    public async remove(@Path() id: number): Promise<void> {
-        const animal = await Animal.findByPk(id);
-        if (!animal) {
-            throw new ApiError(404, "Animal not found");
-        }
-        await animal.destroy();
-        this.setStatus(204);
-    }
-
     @Put("{id}")
     @Response<ErrorResponse>(404, "Animal not found")
     @Response<ErrorResponse>(422, "Validation failed")
@@ -69,5 +59,18 @@ export class AnimalController extends Controller {
         }
         await animal.update(body as unknown as Record<string, unknown>);
         return animal as unknown as AnimalResponse;
+    }
+
+    @Delete("{id}")
+    @SuccessResponse(204, "Deleted")
+    @Response<ErrorResponse>(404, "Animal not found")
+    @Response<ErrorResponse>(500, "Internal server error")
+    public async remove(@Path() id: number): Promise<void> {
+        const animal = await Animal.findByPk(id);
+        if (!animal) {
+            throw new ApiError(404, "Animal not found");
+        }
+        await animal.destroy();
+        this.setStatus(204);
     }
 }

@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "../../app/app";
-import { Animal, sequelize } from "../../app/models";
+import { Animal, Category, sequelize } from "../../app/models";
 
 const SEED_DATA = [
     { name: "Rex", species: "dog", age: 3 },
@@ -20,6 +20,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
     await Animal.destroy({ truncate: true });
+    await Category.destroy({ truncate: true, cascade: true });
 });
 
 describe("POST /animals", () => {
@@ -38,6 +39,16 @@ describe("POST /animals", () => {
         const animals = await Animal.findAll();
         expect(animals).toHaveLength(1);
         expect(animals[0].get("name")).toBe("Rex");
+    });
+
+    it("returns 201 with categoryId when a valid category is provided", async () => {
+        const category = await Category.create({ name: "Mammal" } as Record<string, unknown>);
+        const categoryId = category.get("id") as number;
+
+        const res = await request(app).post("/animals").send({ name: "Rex", species: "dog", age: 3, categoryId });
+
+        expect(res.status).toBe(201);
+        expect(res.body).toMatchObject({ categoryId });
     });
 
     it("returns 422 when a required field is missing", async () => {

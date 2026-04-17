@@ -10,4 +10,10 @@ export const sequelize = new Sequelize(process.env.DB_NAME!, process.env.DB_USER
 
 export { User } from "./user";
 export { Animal } from "./animal";
+export { Category } from "./category";
 
+import { Animal } from "./animal";
+import { Category } from "./category";
+
+Category.hasMany(Animal, { foreignKey: "categoryId", as: "animals" });
+Animal.belongsTo(Category, { foreignKey: "categoryId", as: "category" });
