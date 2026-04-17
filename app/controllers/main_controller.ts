@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { Controller, Get, Route } from "tsoa";
 
-const mainController = {
-    index: (req: Request, res: Response) => {
-        res.send('Hello, World!');
+@Route("/")
+export class MainController extends Controller {
+    @Get()
+    public async index(): Promise<string> {
+        return "Hello, World!";
     }
-};
-
-export default mainController;
+}
