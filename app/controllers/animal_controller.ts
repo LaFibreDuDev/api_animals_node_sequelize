@@ -35,7 +35,9 @@ export class AnimalController extends Controller {
     @Response<ErrorResponse>(500, "Internal server error")
     public async getAll(): Promise<AnimalResponse[]> {
         const animals = await Animal.findAll();
-        return [] as AnimalResponse[];
+        //TEST => permettant de vérifier l'exécution de la CI/CD pour voir un test échoué... 
+        //return [] as AnimalResponse[];
+        return animals as unknown as AnimalResponse[];
     }
 
     @Post()
