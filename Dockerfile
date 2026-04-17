@@ -1,6 +1,5 @@
 # ── Build stage ──────────────────────────────────────────────────────────────
-FROM node:latest-alpine AS builder
-RUN apk update && apk upgrade --no-cache
+FROM node:22-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
@@ -16,8 +15,7 @@ RUN npx tsc -p tsconfig.build.json
 RUN mkdir -p dist/config && cp app/config/swagger.json dist/config/swagger.json
 
 # ── Production stage ──────────────────────────────────────────────────────────
-FROM node:latest-alpine
-RUN apk update && apk upgrade --no-cache
+FROM node:22-alpine
 WORKDIR /app
 
 COPY package*.json ./
