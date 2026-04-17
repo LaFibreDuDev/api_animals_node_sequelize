@@ -96,7 +96,7 @@ Génère le dossier `dist/` prêt à l'emploi :
 
 ### Architecture
 
-```
+```sh
 Internet
    │
    ▼
@@ -111,7 +111,7 @@ app :3000 (Node.js, réseau interne Docker uniquement)
 postgres :5432
 ```
 
-### Prérequis
+### Prérequis techniques
 
 - Docker + Docker Compose installés sur le serveur
 - Ports 80 et 443 ouverts dans le pare-feu
@@ -152,6 +152,7 @@ sh scripts/init-ssl.sh
 ```
 
 Il effectue les étapes suivantes :
+
 1. Crée un certificat auto-signé temporaire (pour que nginx puisse démarrer)
 2. Démarre nginx
 3. Lance certbot pour obtenir le certificat Let's Encrypt via le challenge HTTP
@@ -164,6 +165,7 @@ docker compose up -d
 ```
 
 Ordre de démarrage géré automatiquement :
+
 - `postgres` démarre en premier (health check)
 - `app` attend que postgres soit prêt
 - `nginx` attend que app soit démarré
