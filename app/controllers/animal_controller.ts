@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post, Route, SuccessResponse, Tags } from "tsoa";
+import { Body, Controller, Get, Path, Post, Put, Route, SuccessResponse, Tags } from "tsoa";
+import { ApiError } from "../errors";
 import { Animal } from "../models";
 
 export interface AnimalResponse {
@@ -9,6 +10,12 @@ export interface AnimalResponse {
 }
 
 export interface AnimalCreationParams {
+    name: string;
+    species: string;
+    age: number;
+}
+
+export interface AnimalUpdateParams {
     name: string;
     species: string;
     age: number;
@@ -28,6 +35,16 @@ export class AnimalController extends Controller {
     public async create(@Body() body: AnimalCreationParams): Promise<AnimalResponse> {
         const animal = await Animal.create(body as unknown as Record<string, unknown>);
         this.setStatus(201);
+        return animal as unknown as AnimalResponse;
+    }
+
+    @Put("{id}")
+    public async update(@Path() id: number, @Body() body: AnimalUpdateParams): Promise<AnimalResponse> {
+        const animal = await Animal.findByPk(id);
+        if (!animal) {
+            throw new ApiError(404, "Animal not found");
+        }
+        await animal.update(body as unknown as Record<string, unknown>);
         return animal as unknown as AnimalResponse;
     }
 }

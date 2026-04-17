@@ -47,6 +47,44 @@ describe("POST /animals", () => {
     });
 });
 
+describe("PUT /animals/:id", () => {
+    it("returns 200 with the updated animal", async () => {
+        const [animal] = await Animal.bulkCreate([{ name: "Rex", species: "dog", age: 3 }]);
+        const body = { name: "Rex Updated", species: "dog", age: 4 };
+
+        const res = await request(app).put(`/animals/${animal.get("id")}`).send(body);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({ id: animal.get("id"), ...body });
+    });
+
+    it("persists the changes in the database", async () => {
+        const [animal] = await Animal.bulkCreate([{ name: "Rex", species: "dog", age: 3 }]);
+        const id = animal.get("id") as number;
+
+        await request(app).put(`/animals/${id}`).send({ name: "Rex Updated", species: "dog", age: 4 });
+
+        const updated = await Animal.findByPk(id);
+        expect(updated?.get("name")).toBe("Rex Updated");
+        expect(updated?.get("age")).toBe(4);
+    });
+
+    it("returns 404 when the animal does not exist", async () => {
+        const res = await request(app).put("/animals/99999").send({ name: "Rex", species: "dog", age: 3 });
+
+        expect(res.status).toBe(404);
+        expect(res.body).toEqual({ message: "Animal not found" });
+    });
+
+    it("returns 422 when a required field is missing", async () => {
+        const [animal] = await Animal.bulkCreate([{ name: "Rex", species: "dog", age: 3 }]);
+
+        const res = await request(app).put(`/animals/${animal.get("id")}`).send({ name: "Rex" });
+
+        expect(res.status).toBe(422);
+    });
+});
+
 describe("GET /animals", () => {
     it("returns 200 with an empty array when no animals exist", async () => {
         const res = await request(app).get("/animals");

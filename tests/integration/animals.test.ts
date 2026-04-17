@@ -1,9 +1,14 @@
 import request from "supertest";
 
+const mockAnimal = {
+    update: jest.fn(),
+};
+
 jest.mock("../../app/models", () => ({
     Animal: {
         findAll: jest.fn(),
         create: jest.fn(),
+        findByPk: jest.fn(),
     },
     sequelize: {
         authenticate: jest.fn(),
@@ -64,6 +69,48 @@ describe("POST /animals", () => {
         (Animal.create as jest.Mock).mockRejectedValue(new Error("DB error"));
 
         const res = await request(app).post("/animals").send({ name: "Rex", species: "dog", age: 3 });
+
+        expect(res.status).toBe(500);
+    });
+});
+
+describe("PUT /animals/:id", () => {
+    const body = { name: "Rex Updated", species: "dog", age: 4 };
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockAnimal.update.mockResolvedValue(undefined);
+    });
+
+    it("returns 200 with the updated animal", async () => {
+        const existing = { id: 1, name: "Rex", species: "dog", age: 3, ...mockAnimal };
+        (Animal.findByPk as jest.Mock).mockResolvedValue(existing);
+
+        const res = await request(app).put("/animals/1").send(body);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({ id: 1 });
+    });
+
+    it("returns 404 when the animal does not exist", async () => {
+        (Animal.findByPk as jest.Mock).mockResolvedValue(null);
+
+        const res = await request(app).put("/animals/99").send(body);
+
+        expect(res.status).toBe(404);
+        expect(res.body).toEqual({ message: "Animal not found" });
+    });
+
+    it("returns 422 when a required field is missing", async () => {
+        const res = await request(app).put("/animals/1").send({ name: "Rex" });
+
+        expect(res.status).toBe(422);
+    });
+
+    it("returns 500 when the database fails", async () => {
+        (Animal.findByPk as jest.Mock).mockRejectedValue(new Error("DB error"));
+
+        const res = await request(app).put("/animals/1").send(body);
 
         expect(res.status).toBe(500);
     });
