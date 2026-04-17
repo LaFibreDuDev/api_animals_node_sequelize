@@ -22,6 +22,31 @@ beforeEach(async () => {
     await Animal.destroy({ truncate: true });
 });
 
+describe("POST /animals", () => {
+    it("returns 201 with the created animal", async () => {
+        const body = { name: "Rex", species: "dog", age: 3 };
+
+        const res = await request(app).post("/animals").send(body);
+
+        expect(res.status).toBe(201);
+        expect(res.body).toMatchObject({ id: expect.any(Number), ...body });
+    });
+
+    it("persists the animal in the database", async () => {
+        await request(app).post("/animals").send({ name: "Rex", species: "dog", age: 3 });
+
+        const animals = await Animal.findAll();
+        expect(animals).toHaveLength(1);
+        expect(animals[0].get("name")).toBe("Rex");
+    });
+
+    it("returns 422 when a required field is missing", async () => {
+        const res = await request(app).post("/animals").send({ name: "Rex" });
+
+        expect(res.status).toBe(422);
+    });
+});
+
 describe("GET /animals", () => {
     it("returns 200 with an empty array when no animals exist", async () => {
         const res = await request(app).get("/animals");
