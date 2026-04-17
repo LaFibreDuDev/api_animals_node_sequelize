@@ -116,6 +116,7 @@ postgres :5432
 - Docker + Docker Compose installés sur le serveur
 - Ports 80 et 443 ouverts dans le pare-feu
 - Un nom de domaine pointant vers l'IP du serveur (enregistrement DNS A)
+- Clé SSH configurée et liée au dépôt GitHub (pour le clone et les mises à jour)
 
 ### 1. Cloner le dépôt
 
@@ -145,10 +146,12 @@ ACME_EMAIL=you@example.com
 
 ### 3. Obtenir le certificat SSL (première fois uniquement)
 
+Avant de lancer le script, s'assurer que le domaine (`DOMAIN`) est correctement configuré pour pointer vers le serveur (enregistrement DNS A). S'assurer aussi que les ports 80 et 443 sont ouverts dans le pare-feu.
+
 Ce script résout le problème de démarrage en créant un certificat auto-signé temporaire pour lancer nginx, puis le remplace par un certificat Let's Encrypt réel.
 
 ```bash
-sh scripts/init-ssl.sh
+sudo DOMAIN=api.example.com ACME_EMAIL=you@example.com sh scripts/init-ssl.sh
 ```
 
 Il effectue les étapes suivantes :
@@ -161,6 +164,9 @@ Il effectue les étapes suivantes :
 ### 4. Démarrer la stack complète
 
 ```bash
+# Arrêter et supprimer les conteneurs existants (optionnel, si c'est la première fois)
+docker compose down
+# Démarrer tous les services en arrière-plan
 docker compose up -d
 ```
 

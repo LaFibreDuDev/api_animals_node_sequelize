@@ -6,4 +6,9 @@ export class MainController extends Controller {
     public async index(): Promise<string> {
         return "Hello, World!";
     }
+
+    @Get("health")
+    public async health(): Promise<string> {
+        return "OK";
+    }
 }
