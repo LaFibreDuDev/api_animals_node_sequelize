@@ -11,7 +11,7 @@
     "test:integration": "jest tests/integration",
     "test:e2e": "tsoa spec-and-routes && jest --config jest.config.e2e.ts",
     "test:coverage": "jest --coverage",
-    "build": "tsoa spec-and-routes && tsc -p tsconfig.build.json && cp app/config/swagger.json dist/config/swagger.json",
+    "build": "tsoa spec-and-routes && tsc -p tsconfig.build.json && mkdir -p dist/config && cp app/config/swagger.json dist/config/swagger.json",
     "dev": "tsoa spec-and-routes && DEBUG=app:* nodemon --exec ts-node app/index.ts",
     "test_db": "ts-node app/utils/test_db.ts",
     "seed": "ts-node app/seeders/index.ts"

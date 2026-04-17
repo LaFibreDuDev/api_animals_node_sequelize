@@ -12,7 +12,7 @@ RUN npx tsoa spec-and-routes
 RUN npx tsc -p tsconfig.build.json
 
 # swagger.json is not a TS file — copy it manually to the dist tree
-RUN cp app/config/swagger.json dist/config/swagger.json
+RUN mkdir -p dist/config && cp app/config/swagger.json dist/config/swagger.json
 
 # ── Production stage ──────────────────────────────────────────────────────────
 FROM node:20-alpine
