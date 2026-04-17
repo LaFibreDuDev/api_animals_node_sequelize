@@ -30,7 +30,7 @@ docker compose up -d nginx
 sleep 3
 
 echo "[3/4] Requesting certificate from Let's Encrypt for ${DOMAIN}..."
-docker compose run --rm certbot certonly \
+docker compose run --rm --entrypoint certbot certbot certonly \
   --webroot -w /var/www/certbot \
   --domain "$DOMAIN" \
   --email "$ACME_EMAIL" \
