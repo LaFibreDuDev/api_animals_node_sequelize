@@ -1,15 +1,19 @@
-import { Request, Response } from "express";
+import { Controller, Get, Route, Tags } from "tsoa";
 import { Animal } from "../models";
 
-const animalController = {
-    index: async (_req: Request, res: Response) => {
-        try {
-            const animals = await Animal.findAll();
-            res.status(200).json(animals);
-        } catch (error) {
-            res.status(500).json({ message: "Internal server error" });
-        }
-    }
-};
+export interface AnimalResponse {
+    id: number;
+    name: string;
+    species: string;
+    age: number;
+}
 
-export default animalController;
+@Route("animals")
+@Tags("Animals")
+export class AnimalController extends Controller {
+    @Get()
+    public async getAll(): Promise<AnimalResponse[]> {
+        const animals = await Animal.findAll();
+        return animals as unknown as AnimalResponse[];
+    }
+}

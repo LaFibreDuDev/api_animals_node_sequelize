@@ -4,12 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "tsoa": "tsoa spec-and-routes",
+    "pretest": "tsoa spec-and-routes",
     "test": "jest",
     "test:unit": "jest tests/unit",
     "test:integration": "jest tests/integration",
-    "test:e2e": "jest --config jest.config.e2e.ts",
+    "test:e2e": "tsoa spec-and-routes && jest --config jest.config.e2e.ts",
     "test:coverage": "jest --coverage",
-    "dev": "DEBUG=app:* nodemon --exec ts-node app/index.ts",
+    "dev": "tsoa spec-and-routes && DEBUG=app:* nodemon --exec ts-node app/index.ts",
     "test_db": "ts-node app/utils/test_db.ts",
     "seed": "ts-node app/seeders/index.ts"
   },
@@ -22,9 +24,10 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "pg": "^8.20.0",
+    "reflect-metadata": "^0.2.2",
     "sequelize": "^6.37.8",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "tsoa": "^7.0.0-alpha.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^10.4.0",
@@ -33,7 +36,6 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^25.6.0",
     "@types/supertest": "^7.2.0",
-    "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "jest": "^30.3.0",
     "nodemon": "^3.1.14",

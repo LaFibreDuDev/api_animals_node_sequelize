@@ -1,0 +1,14 @@
+{
+  "entryFile": "app/index.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["app/controllers/**/*.ts"],
+  "spec": {
+    "outputDirectory": "app/config",
+    "specVersion": 3,
+    "name": "Mini API",
+    "version": "1.0.0"
+  },
+  "routes": {
+    "routesDir": "app/routers"
+  }
+}
