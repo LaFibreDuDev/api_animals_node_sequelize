@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Path, Post, Put, Route, SuccessResponse, Tags } from "tsoa";
+import { Body, Controller, Delete, Get, Path, Post, Put, Response, Route, SuccessResponse, Tags } from "tsoa";
 import { ApiError } from "../errors";
 import { Animal } from "../models";
 
@@ -21,10 +21,15 @@ export interface AnimalUpdateParams {
     age: number;
 }
 
+interface ErrorResponse {
+    message: string;
+}
+
 @Route("animals")
 @Tags("Animals")
 export class AnimalController extends Controller {
     @Get()
+    @Response<ErrorResponse>(500, "Internal server error")
     public async getAll(): Promise<AnimalResponse[]> {
         const animals = await Animal.findAll();
         return animals as unknown as AnimalResponse[];
@@ -32,13 +37,31 @@ export class AnimalController extends Controller {
 
     @Post()
     @SuccessResponse(201, "Created")
+    @Response<ErrorResponse>(422, "Validation failed")
+    @Response<ErrorResponse>(500, "Internal server error")
     public async create(@Body() body: AnimalCreationParams): Promise<AnimalResponse> {
         const animal = await Animal.create(body as unknown as Record<string, unknown>);
         this.setStatus(201);
         return animal as unknown as AnimalResponse;
     }
 
+    @Delete("{id}")
+    @SuccessResponse(204, "Deleted")
+    @Response<ErrorResponse>(404, "Animal not found")
+    @Response<ErrorResponse>(500, "Internal server error")
+    public async remove(@Path() id: number): Promise<void> {
+        const animal = await Animal.findByPk(id);
+        if (!animal) {
+            throw new ApiError(404, "Animal not found");
+        }
+        await animal.destroy();
+        this.setStatus(204);
+    }
+
     @Put("{id}")
+    @Response<ErrorResponse>(404, "Animal not found")
+    @Response<ErrorResponse>(422, "Validation failed")
+    @Response<ErrorResponse>(500, "Internal server error")
     public async update(@Path() id: number, @Body() body: AnimalUpdateParams): Promise<AnimalResponse> {
         const animal = await Animal.findByPk(id);
         if (!animal) {

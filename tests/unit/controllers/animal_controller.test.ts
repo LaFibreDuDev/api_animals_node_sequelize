@@ -76,4 +76,29 @@ describe("AnimalController", () => {
             await expect(new AnimalController().update(1, body)).rejects.toThrow("DB error");
         });
     });
+
+    describe("remove", () => {
+        it("destroys the animal", async () => {
+            const mockAnimal = { id: 1, destroy: jest.fn().mockResolvedValue(undefined) };
+            (Animal.findByPk as jest.Mock).mockResolvedValue(mockAnimal);
+
+            await new AnimalController().remove(1);
+
+            expect(Animal.findByPk).toHaveBeenCalledWith(1);
+            expect(mockAnimal.destroy).toHaveBeenCalled();
+        });
+
+        it("throws ApiError 404 when animal is not found", async () => {
+            (Animal.findByPk as jest.Mock).mockResolvedValue(null);
+
+            await expect(new AnimalController().remove(99)).rejects.toThrow(ApiError);
+            await expect(new AnimalController().remove(99)).rejects.toMatchObject({ status: 404 });
+        });
+
+        it("throws when findByPk throws", async () => {
+            (Animal.findByPk as jest.Mock).mockRejectedValue(new Error("DB error"));
+
+            await expect(new AnimalController().remove(1)).rejects.toThrow("DB error");
+        });
+    });
 });

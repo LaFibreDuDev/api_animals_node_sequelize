@@ -2,6 +2,7 @@ import request from "supertest";
 
 const mockAnimal = {
     update: jest.fn(),
+    destroy: jest.fn(),
 };
 
 jest.mock("../../app/models", () => ({
@@ -111,6 +112,38 @@ describe("PUT /animals/:id", () => {
         (Animal.findByPk as jest.Mock).mockRejectedValue(new Error("DB error"));
 
         const res = await request(app).put("/animals/1").send(body);
+
+        expect(res.status).toBe(500);
+    });
+});
+
+describe("DELETE /animals/:id", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockAnimal.destroy.mockResolvedValue(undefined);
+    });
+
+    it("returns 204 on success", async () => {
+        (Animal.findByPk as jest.Mock).mockResolvedValue({ id: 1, ...mockAnimal });
+
+        const res = await request(app).delete("/animals/1");
+
+        expect(res.status).toBe(204);
+    });
+
+    it("returns 404 when the animal does not exist", async () => {
+        (Animal.findByPk as jest.Mock).mockResolvedValue(null);
+
+        const res = await request(app).delete("/animals/99");
+
+        expect(res.status).toBe(404);
+        expect(res.body).toEqual({ message: "Animal not found" });
+    });
+
+    it("returns 500 when the database fails", async () => {
+        (Animal.findByPk as jest.Mock).mockRejectedValue(new Error("DB error"));
+
+        const res = await request(app).delete("/animals/1");
 
         expect(res.status).toBe(500);
     });

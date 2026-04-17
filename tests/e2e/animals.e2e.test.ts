@@ -47,6 +47,25 @@ describe("POST /animals", () => {
     });
 });
 
+describe("DELETE /animals/:id", () => {
+    it("returns 204 and removes the animal from the database", async () => {
+        const [animal] = await Animal.bulkCreate([{ name: "Rex", species: "dog", age: 3 }]);
+        const id = animal.get("id") as number;
+
+        const res = await request(app).delete(`/animals/${id}`);
+
+        expect(res.status).toBe(204);
+        expect(await Animal.findByPk(id)).toBeNull();
+    });
+
+    it("returns 404 when the animal does not exist", async () => {
+        const res = await request(app).delete("/animals/99999");
+
+        expect(res.status).toBe(404);
+        expect(res.body).toEqual({ message: "Animal not found" });
+    });
+});
+
 describe("PUT /animals/:id", () => {
     it("returns 200 with the updated animal", async () => {
         const [animal] = await Animal.bulkCreate([{ name: "Rex", species: "dog", age: 3 }]);
