@@ -9,6 +9,6 @@ export class MainController extends Controller {
 
     @Get("health")
     public async health(): Promise<string> {
-        return "OK";
+        return "OK, bravo, tu as réussi à faire un test de CI/CD avec succès !";
     }
 }
